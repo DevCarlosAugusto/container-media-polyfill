@@ -22,6 +22,7 @@ npm install container-js-query
 ```
 
 ---
+
 ## 📖 Conceito e Tipagem (JSDoc)
 
 A biblioteca fornece IntelliSense completo. Ao utilizar a função, seu editor de código exibirá automaticamente os tipos e descrições dos parâmetros:
@@ -41,22 +42,26 @@ A biblioteca fornece IntelliSense completo. Ao utilizar a função, seu editor d
 
 ### VueJs
 
-Utilize ``ref`` para capturar o elemento e os hooks de ciclo de vida para gerenciar o observador.
+Utilize `ref` para capturar o elemento e os hooks de ciclo de vida para gerenciar o observador.
 
 ```vue
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
-import { containerJsQuery } from 'container-js-query';
+import { ref, onMounted, onBeforeUnmount } from "vue";
+import { containerJsQuery } from "container-js-query";
 
 const containerRef = ref(null);
 let stopQuery;
 
 onMounted(() => {
   // Aplicando estratégia de CLASSE para um Drawer
-  stopQuery = containerJsQuery(containerRef.value, {
-    sm: 300,
-    md: 700
-  }, { strategy: 'class', prefix: 'Drawer--' });
+  stopQuery = containerJsQuery(
+    containerRef.value,
+    {
+      sm: 300,
+      md: 700,
+    },
+    { strategy: "class", prefix: "Drawer--" },
+  );
 });
 
 onBeforeUnmount(() => stopQuery?.());
@@ -70,8 +75,8 @@ onBeforeUnmount(() => stopQuery?.());
 
 <style scoped>
 /* A classe será aplicada conforme o tamanho do container: .Drawer--sm ou .Drawer--md */
-.Drawer--md { 
-  display: flex; 
+.Drawer--md {
+  display: flex;
   padding: 2rem;
 }
 </style>
@@ -83,16 +88,22 @@ Em Svelte, a forma mais eficiente é utilizar uma Action, que lida automaticamen
 
 ```html
 <script>
-  import { containerJsQuery } from 'container-js-query';
+  import { containerJsQuery } from "container-js-query";
 
   function containerAction(node) {
-    const stop = containerJsQuery(node, { 
-      mobile: 320, 
-      tablet: 768 
-    }, { strategy: 'class', prefix: 'widget-' });
+    const stop = containerJsQuery(
+      node,
+      {
+        mobile: 320,
+        tablet: 768,
+      },
+      { strategy: "class", prefix: "widget-" },
+    );
 
     return {
-      destroy() { stop(); }
+      destroy() {
+        stop();
+      },
     };
   }
 </script>
@@ -102,54 +113,76 @@ Em Svelte, a forma mais eficiente é utilizar uma Action, que lida automaticamen
 </div>
 
 <style>
-  :global(.widget-mobile) { font-size: 0.8rem; }
-  :global(.widget-tablet) { font-size: 1.2rem; }
+  :global(.widget-mobile) {
+    font-size: 0.8rem;
+  }
+  :global(.widget-tablet) {
+    font-size: 1.2rem;
+  }
 </style>
 ```
 
 ### React
 
-Combine ``useRef`` e ``useEffect`` para inicializar a biblioteca e garantir que o cleanup seja executado ao desmontar.
+Combine `useRef` e `useEffect` para inicializar a biblioteca e garantir que o cleanup seja executado ao desmontar.
 
 ```jsx
-import { useEffect, useRef } from 'react';
-import { containerJsQuery } from 'container-js-query';
+import { useEffect, useRef } from "react";
+import { containerJsQuery } from "container-js-query";
 
 export const Box = ({ children }) => {
   const boxRef = useRef(null);
 
   useEffect(() => {
-    const cleanup = containerJsQuery(boxRef.current, { 
-      wide: 500 
-    }, { strategy: 'class', prefix: 'Box--' });
-    
-    return () => cleanup(); 
+    const cleanup = containerJsQuery(
+      boxRef.current,
+      {
+        wide: 500,
+      },
+      { strategy: "class", prefix: "Box--" },
+    );
+
+    return () => cleanup();
   }, []);
 
-  return <div ref={boxRef} className="box-component">{children}</div>;
+  return (
+    <div ref={boxRef} className="box-component">
+      {children}
+    </div>
+  );
 };
 ```
 
 ### Angular
 
-Acesse o DOM através de ``@ViewChild`` e utilize os hooks ``AfterViewInit`` e ``OnDestroy``.
+Acesse o DOM através de `@ViewChild` e utilize os hooks `AfterViewInit` e `OnDestroy`.
 
 ```ts
-import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
-import { containerJsQuery } from 'container-js-query';
+import {
+  Component,
+  ElementRef,
+  ViewChild,
+  AfterViewInit,
+  OnDestroy,
+} from "@angular/core";
+import { containerJsQuery } from "container-js-query";
 
 @Component({
-  selector: 'app-card',
-  template: `<div #cardElement class="card-container">...</div>`
+  selector: "app-card",
+  template: `<div #cardElement class="card-container">...</div>`,
 })
 export class CardComponent implements AfterViewInit, OnDestroy {
-  @ViewChild('cardElement') cardElement!: ElementRef;
+  @ViewChild("cardElement") cardElement!: ElementRef;
   private stop?: () => void;
 
   ngAfterViewInit() {
-    this.stop = containerJsQuery(this.cardElement.nativeElement, {
-      full: 800
-    }, { strategy: 'attribute', prefix: 'card-' });
+    this.stop = containerJsQuery(
+      this.cardElement.nativeElement,
+      {
+        full: 800,
+      },
+      { strategy: "attribute", prefix: "card-" },
+    );
   }
 
   ngOnDestroy() {
@@ -160,20 +193,24 @@ export class CardComponent implements AfterViewInit, OnDestroy {
 
 ### Lit
 
-Em componentes Lit (Web Components), o método ``firstUpdated`` é o local correto para iniciar observadores de DOM.
+Em componentes Lit (Web Components), o método `firstUpdated` é o local correto para iniciar observadores de DOM.
 
 ```js
-import { LitElement, html } from 'lit';
-import { query } from 'lit/decorators.js';
-import { containerJsQuery } from 'container-js-query';
+import { LitElement, html } from "lit";
+import { query } from "lit/decorators.js";
+import { containerJsQuery } from "container-js-query";
 
 class MyButton extends LitElement {
-  @query('.btn-wrapper') _btn;
+  @query(".btn-wrapper") _btn;
 
   firstUpdated() {
-    this._cleanup = containerJsQuery(this._btn, { 
-      large: 400 
-    }, { strategy: 'class', prefix: 'btn-' });
+    this._cleanup = containerJsQuery(
+      this._btn,
+      {
+        large: 400,
+      },
+      { strategy: "class", prefix: "btn-" },
+    );
   }
 
   disconnectedCallback() {
@@ -185,10 +222,11 @@ class MyButton extends LitElement {
     return html`<div class="btn-wrapper"><button>Click Me</button></div>`;
   }
 }
-customElements.define('my-button', MyButton);
+customElements.define("my-button", MyButton);
 ```
 
 ## 🎨 Exemplos de CSS
+
 ##### Usando Atributos (Padrão)
 
 Ideal para manter uma estrutura baseada em dados:
@@ -200,12 +238,19 @@ Ideal para manter uma estrutura baseada em dados:
 ```
 
 #### Usando Classes (Estratégia de Escopo)
+
 Ideal para Design Systems onde cada componente tem seu próprio namespace:
 
 ```css
 /* Botão reage apenas se o container dele for 'sm' */
-.Button--sm { padding: 4px; font-size: 10px; }
+.Button--sm {
+  padding: 4px;
+  font-size: 10px;
+}
 
 /* Box reage apenas se o container dela for 'lg' */
-.Box--lg { padding: 40px; border-radius: 20px; }
+.Box--lg {
+  padding: 40px;
+  border-radius: 20px;
+}
 ```
