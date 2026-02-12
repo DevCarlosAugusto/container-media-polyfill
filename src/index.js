@@ -35,7 +35,8 @@ export function containerJsQuery(element, breakpoints, options = {}) {
           element.classList.toggle(marker, shouldApply);
         } else {
           if (shouldApply) {
-            if (!element.hasAttribute(`data-${marker}`)) element.setAttribute(`data-${marker}`, '');
+            if (!element.hasAttribute(`data-${marker}`))
+              element.setAttribute(`data-${marker}`, '');
           } else {
             element.removeAttribute(`data-${marker}`);
           }
