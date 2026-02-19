@@ -19,8 +19,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DevCarlosAugusto/container-media-polyfill.git"
-  },,
+    "url": "https://github.com/DevCarlosAugusto/container-media-polyfill"
+  },
   "keywords": [
     "css",
     "polyfill",
